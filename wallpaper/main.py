@@ -16,9 +16,17 @@ se = appscript.app('System Events')
 desktops = se.desktops.display_name.get()
 for d in desktops:
     img_path = None
-    if d == 'S27E590':
-        img_path = get_random_file(horizontal_folder_path)
-    elif d == 'Kg251Q':
-        img_path = get_random_file(vertical_folder_path)
     desk = se.desktops[appscript.its.display_name == d]
+    curr_img_path = desk.picture.get()
+    
+    if d == 'S27E590':
+        folder = horizontal_folder_path
+    elif d == 'Kg251Q':
+        folder = vertical_folder_path
+    
+    while True:
+            img_path = get_random_file(folder)
+            if img_path != curr_img_path:
+                break
+    
     desk.picture.set(appscript.mactypes.File(img_path))
