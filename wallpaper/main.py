@@ -14,6 +14,7 @@ vertical_folder_path = os.path.abspath("../vertical_images/")
 
 se = appscript.app('System Events')
 desktops = se.desktops.display_name.get()
+monitor = None
 for d in desktops:
     img_path = None
     desk = se.desktops[appscript.its.display_name == d]
@@ -21,12 +22,14 @@ for d in desktops:
     
     if d == 'S27E590':
         folder = horizontal_folder_path
+        monitor = 'horizontal'
     elif d == 'Kg251Q':
         folder = vertical_folder_path
+        monitor = 'vertical'
     
     while True:
             img_path = get_random_file(folder)
             if img_path != curr_img_path:
                 break
-    
+    print(f'Setting {monitor} monitor wallpaper to {img_path}')
     desk.picture.set(appscript.mactypes.File(img_path))
