@@ -4,9 +4,15 @@ import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
+def check_img_extension(file_path):
+    file_path = file_path.lower()
+    if file_path.endswith('.jpg') or file_path.endswith('.jpeg') or file_path.endswith('.png'):
+        return True
+    return False
+
+
 def get_random_file(folder_path):
-    files = [f for f in os.listdir(folder_path) if os.path.isfile(
-        os.path.join(folder_path, f))]
+    files = [f for f in os.listdir(folder_path) if check_img_extension(f)]
     if not files:
         return None
     return os.path.join(folder_path, random.choice(files))
