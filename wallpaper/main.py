@@ -1,43 +1,71 @@
 import random
 import appscript
 import os
+import logging
+import pytz
+from datetime import datetime
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+BASE_LOG_PATH = os.environ.get('LOG_DIR')
+LOG_FILENAME = 'wallpaper.log'
+LOG_PATH = os.path.join(BASE_LOG_PATH, "wallpaper", datetime.now(
+    pytz.timezone('US/Pacific')).strftime('%Y-%m-%d_%H-%M-%S'), LOG_FILENAME)
+os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler(LOG_PATH)
+logger.addHandler(file_handler)
 
 
 def check_img_extension(file_path):
     file_path = file_path.lower()
     if file_path.endswith('.jpg') or file_path.endswith('.jpeg') or file_path.endswith('.png'):
         return True
+    logger.warning(f'File {file_path} is not a valid image file')
     return False
 
 
 def get_random_file(folder_path):
     files = [f for f in os.listdir(folder_path) if check_img_extension(f)]
     if not files:
+        logger.warning(f'No valid images in {folder_path}')
         return None
     return os.path.join(folder_path, random.choice(files))
 
 
-horizontal_folder_path = os.path.abspath("../horizontal_images/")
-vertical_folder_path = os.path.abspath("../vertical_images/")
+if __name__ == '__main__':
+    logger.info(
+        f"Starting execution at {datetime.now(pytz.timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S')}")
 
-se = appscript.app('System Events')
-desktops = se.desktops.display_name.get()
-monitor = None
-for d in desktops:
-    img_path = None
-    desk = se.desktops[appscript.its.display_name == d]
-    curr_img_path = desk.picture.get()[0]
+    horizontal_folder_path = os.path.abspath("../horizontal_images/")
+    vertical_folder_path = os.path.abspath("../vertical_images/")
 
-    if d == 'S27E590':
-        folder = horizontal_folder_path
-        monitor = 'horizontal'
-    elif d == 'Kg251Q':
-        folder = vertical_folder_path
-        monitor = 'vertical'
-    while True:
-        img_path = get_random_file(folder)
-        if img_path != curr_img_path:
-            break
-    print(f'Setting {monitor} monitor wallpaper to {img_path}')
-    desk.picture.set(appscript.mactypes.File(img_path))
+    se = appscript.app('System Events')
+    desktops = se.desktops.display_name.get()
+    logger.info(f'Found desktops: {desktops}')
+    if len(desktops) != 2:
+        logger.error('Found more than two desktops, exiting')
+        exit()
+
+    monitor = None
+    for d in desktops:
+        img_path = None
+        desk = se.desktops[appscript.its.display_name == d]
+        curr_img_path = desk.picture.get()[0]
+
+        if d == 'S27E590':
+            folder = horizontal_folder_path
+            monitor = 'horizontal'
+        elif d == 'Kg251Q':
+            folder = vertical_folder_path
+            monitor = 'vertical'
+        while True:
+            img_path = get_random_file(folder)
+            if img_path != curr_img_path:
+                break
+        logger.info(f'Found image {img_path} for {monitor} monitor')
+        desk.picture.set(appscript.mactypes.File(img_path))
+
+    logger.info(
+        f'Finished execution at {datetime.now(pytz.timezone("US/Pacific")).strftime("%Y-%m-%d %H:%M:%S")}')
