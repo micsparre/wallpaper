@@ -4,9 +4,12 @@ import os
 import logging
 import pytz
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-BASE_LOG_PATH = os.environ.get('LOG_DIR')
+BASE_LOG_PATH = os.environ.get('LOG_DIR', 'tmp/')
 LOG_FILENAME = 'wallpaper.log'
 LOG_PATH = os.path.join(BASE_LOG_PATH, "wallpaper", datetime.now(
     pytz.timezone('US/Pacific')).strftime('%Y-%m-%d_%H-%M-%S'), LOG_FILENAME)
@@ -50,16 +53,21 @@ if __name__ == '__main__':
 
     monitor = None
     for d in desktops:
+        logger.info(f'Processing desktop {d}')
         img_path = None
         desk = se.desktops[appscript.its.display_name == d]
         curr_img_path = desk.picture.get()[0]
 
-        if d == 'S27E590':
+        if d.lower() == 's27e590':
             folder = horizontal_folder_path
             monitor = 'horizontal'
-        elif d == 'Kg251Q':
+        elif d.lower() == 'kg251q':
             folder = vertical_folder_path
             monitor = 'vertical'
+        else:
+            logger.error(f'Unknown monitor {d}, exiting')
+            exit()
+
         while True:
             img_path = get_random_file(folder)
             if img_path != curr_img_path:

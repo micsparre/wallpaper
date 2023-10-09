@@ -4,3 +4,4 @@ wallpaper/swift.py
 wallpaper/test.swift
 wallpaper/utils.py
 .DS_Store
+.env
