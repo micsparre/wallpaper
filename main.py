@@ -9,9 +9,9 @@ from dotenv import load_dotenv
 load_dotenv()
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-BASE_LOG_PATH = os.environ.get('LOG_DIR', 'tmp/')
+BASE_LOG_PATH = os.environ.get('LOG_DIR', 'logs/')
 LOG_FILENAME = 'wallpaper.log'
-LOG_PATH = os.path.join(BASE_LOG_PATH, "wallpaper", datetime.now(
+LOG_PATH = os.path.join(BASE_LOG_PATH, datetime.now(
     pytz.timezone('US/Pacific')).strftime('%Y-%m-%d_%H-%M-%S'), LOG_FILENAME)
 os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
 
@@ -41,24 +41,22 @@ if __name__ == '__main__':
     logger.info(
         f"Starting execution at {datetime.now(pytz.timezone('US/Pacific')).strftime('%Y-%m-%d %H:%M:%S')}")
 
-    horizontal_folder_path = os.path.abspath("../horizontal_images/")
-    vertical_folder_path = os.path.abspath("../vertical_images/")
+    horizontal_folder_path = os.path.abspath("horizontal_images")
+    vertical_folder_path = os.path.abspath("vertical_images")
 
     se = appscript.app('System Events')
     desktops = se.desktops.display_name.get()
     logger.info(f'Found desktops: {desktops}')
-    if len(desktops) != 2:
-        logger.error('Found more than two desktops, exiting')
-        exit()
 
     monitor = None
     for d in desktops:
         logger.info(f'Processing desktop {d}')
         img_path = None
         desk = se.desktops[appscript.its.display_name == d]
+        print(f"desktop size: {desk.size}")
         curr_img_path = desk.picture.get()[0]
 
-        if d.lower() == 's27e590':
+        if d.lower() == 'color lcd':
             folder = horizontal_folder_path
             monitor = 'horizontal'
         elif d.lower() == 'kg251q':

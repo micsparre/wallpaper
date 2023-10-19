@@ -1,6 +1,10 @@
 appscript==1.2.2
+Cython==3.0.3
 lxml==4.9.3
 palettable==3.3.3
 Pillow==10.0.0
+pyobjc-core==10.0
+pyobjc-framework-Cocoa==10.0
 python-dotenv==1.0.0
 pytz==2023.3.post1
+screeninfo==0.8.1

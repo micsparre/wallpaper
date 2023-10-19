@@ -5,3 +5,4 @@ wallpaper/test.swift
 wallpaper/utils.py
 .DS_Store
 .env
+logs/
