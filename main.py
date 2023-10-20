@@ -53,7 +53,6 @@ if __name__ == '__main__':
         logger.info(f'Processing desktop {d}')
         img_path = None
         desk = se.desktops[appscript.its.display_name == d]
-        print(f"desktop size: {desk.size}")
         curr_img_path = desk.picture.get()[0]
 
         if d.lower() == 'color lcd':
